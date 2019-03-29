@@ -3,9 +3,52 @@
 #include "hashtable.h"
 #include "ex1.h"
 
+Answer *create_answer(int index_1, int index_2)
+{
+  Answer *pair = malloc(sizeof(Answer));
+  pair->index_1 = index_1;
+  pair->index_2 = index_2;
+
+  return pair;
+}
+
+
 Answer *get_indices_of_item_weights(int *weights, int length, int limit)
 {
+  if(length <= 1) return NULL;
+  if(length == 2){
+    if(weights[0] + weights[1] == limit){
+      return create_answer(1, 0);
+    }
+    else
+    {
+      return NULL;
+    }
+    
+  }
+
+
   HashTable *ht = create_hash_table(16);
+
+  int i;
+  for(i = 0; i < length; i++)
+  {
+    hash_table_insert(ht, weights[i], i);
+  }
+  for(i = length - 1; i >= 0; i--)
+  {
+    int weight_check = weights[i];
+    hash_table_remove(ht, weights[i]);
+    int match_index = hash_table_retrieve(ht, limit - weight_check);
+    if(match_index >= 0)
+    {
+      Answer *result =create_answer(i, match_index);
+      destroy_hash_table(ht);
+      return result;
+    }
+    
+  }
+  destroy_hash_table(ht);
 
   // YOUR CODE HERE
 
